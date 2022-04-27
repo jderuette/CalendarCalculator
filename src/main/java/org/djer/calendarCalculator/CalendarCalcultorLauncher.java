@@ -1,0 +1,39 @@
+package org.djer.calendarCalculator;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+/**
+ * @author Djer13
+ *
+ */
+@SpringBootApplication
+public class CalendarCalcultorLauncher implements CommandLineRunner {
+
+    private static Logger LOG = LoggerFactory.getLogger(CalendarCalcultorLauncher.class);
+
+    public static void main(String[] args) {
+
+        LOG.info("STARTING THE APPLICATION");
+        SpringApplication.run(CalendarCalcultorLauncher.class, args);
+        LOG.info("APPLICATION FINISHED");
+
+        System.out.println(
+                "Bienvenu si ce n'est déja fait votre naviguateur va s'ouvrir pour vous demander de choisir un compte Google auquel vous connecter");
+    }
+
+    @Override
+    public void run(String... args) throws IOException, GeneralSecurityException {
+        LOG.info("EXECUTING : command line runner");
+        GoogleCalendarService service = new GoogleCalendarService();
+        service.displayEventInConsole("user");
+
+    }
+
+}
