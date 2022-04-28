@@ -28,9 +28,10 @@ public class CommandLineHelper {
     private String query;
     private ZoneId userTimeZone;
 
-    public CommandLineHelper() {
+    public CommandLineHelper(final String[] args) {
         userTimeZone = ZoneOffset.systemDefault();
         defineCommandLineOptions();
+        parseCommandLine(args);
     }
 
     private void defineCommandLineOptions() {
@@ -48,7 +49,7 @@ public class CommandLineHelper {
 
     }
 
-    public void parseCommandLine(String[] args) {
+    private void parseCommandLine(final String[] args) {
         // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
@@ -91,15 +92,15 @@ public class CommandLineHelper {
         }
     }
 
-    private String parseDateToValideFromDateTime(String cmdLineDate) {
+    private String parseDateToValideFromDateTime(final String cmdLineDate) {
         return parseDateToValidDateTime(cmdLineDate, "00:00:00");
     }
 
-    private String parseDateToValideEndDateTime(String cmdLineDate) {
+    private String parseDateToValideEndDateTime(final String cmdLineDate) {
         return parseDateToValidDateTime(cmdLineDate, "23:59:59");
     }
 
-    private String parseDateToValidDateTime(String cmdLineDate, String hoursPart) {
+    private String parseDateToValidDateTime(final String cmdLineDate, final String hoursPart) {
         String validFrom = cmdLineDate;
         // [" +userTimeZone.getId() + "]"
         String defaultHourPart = "T" + hoursPart;

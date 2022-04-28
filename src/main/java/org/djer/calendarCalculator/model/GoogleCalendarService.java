@@ -14,7 +14,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -119,8 +118,9 @@ public class GoogleCalendarService {
         }
     }
 
-    private List<Event> getEvents(String user, String calendar, LocalDateTime from, LocalDateTime to, ZoneId userZoneId,
-            String query) throws GeneralSecurityException, IOException {
+    private List<Event> getEvents(final String user, final String calendar, final LocalDateTime from,
+            final LocalDateTime to, final ZoneId userZoneId, final String query)
+            throws GeneralSecurityException, IOException {
         Calendar service = loadedCalendarService.get(user);
         if (null == service) {
             loadCalendarApi(user);
@@ -154,7 +154,7 @@ public class GoogleCalendarService {
         return items;
     }
 
-    private String humanReadableEventQuery(com.google.api.services.calendar.Calendar.Events.List eventQuery) {
+    private String humanReadableEventQuery(final com.google.api.services.calendar.Calendar.Events.List eventQuery) {
 
         StringBuilder sb = new StringBuilder();
         sb.append("Calendrier").append(eventQuery.getCalendarId()).append(" entre ").append(eventQuery.getTimeMin())
@@ -169,7 +169,7 @@ public class GoogleCalendarService {
         return sb.toString();
     }
 
-    private void displayEventInConsole(List<Event> events) {
+    private void displayEventInConsole(final List<Event> events) {
 
         if (events.isEmpty()) {
             System.out.println("Aucun évennement corespondant aux critères");
@@ -186,7 +186,7 @@ public class GoogleCalendarService {
 
     }
 
-    private void displayDurationInConsole(List<Event> events) {
+    private void displayDurationInConsole(final List<Event> events) {
         long durationInMinutes = CalendarCalculator.sumDurationinMinutes(events);
 
         long DurationInHourFullPart = durationInMinutes / 60;
@@ -196,8 +196,9 @@ public class GoogleCalendarService {
                 + DurationInHourFullPart + "h" + DurationInHourModulo + "min");
     }
 
-    public void displayEventInConsole(String user, String calendarId, LocalDateTime from, LocalDateTime to,
-            ZoneId userZoneId, String query) throws IOException, GeneralSecurityException {
+    public void displayEventInConsole(final String user, final String calendarId, final LocalDateTime from,
+            final LocalDateTime to, final ZoneId userZoneId, final String query)
+            throws IOException, GeneralSecurityException {
 
         loadCalendarApi(user);
 
@@ -207,29 +208,4 @@ public class GoogleCalendarService {
 
     }
 
-    public class CalendarCalculator {
-
-        public static Long sumDurationinMinutes(List<Event> events) {
-            if (null == events) {
-                return 0l;
-            }
-
-            long nbMins = 0;
-
-            for (Event event : events) {
-                nbMins += extracDuration(event);
-            }
-            return nbMins;
-        }
-
-        private static Long extracDuration(Event event) {
-            Instant start = Instant.ofEpochMilli(event.getStart().getDateTime().getValue());
-            Instant end = Instant.ofEpochMilli(event.getEnd().getDateTime().getValue());
-
-            // Period period = Period.between(start, end);
-
-            return ChronoUnit.MINUTES.between(start, end);
-
-        }
-    }
 }
