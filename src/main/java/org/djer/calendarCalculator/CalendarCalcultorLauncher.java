@@ -21,11 +21,10 @@ public class CalendarCalcultorLauncher implements CommandLineRunner {
     public static void main(String[] args) {
 
         LOG.info("STARTING THE APPLICATION");
-        SpringApplication.run(CalendarCalcultorLauncher.class, args);
-        LOG.info("APPLICATION FINISHED");
-
         System.out.println(
                 "Bienvenu si ce n'est déja fait votre naviguateur va s'ouvrir pour vous demander de choisir un compte Google auquel vous connecter");
+        SpringApplication.run(CalendarCalcultorLauncher.class, args);
+        LOG.info("APPLICATION FINISHED");
     }
 
     @Override

@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -130,19 +131,21 @@ public class GoogleCalendarService {
 
         if (null != from) {
             Instant fromInstant = from.toInstant(userZoneId.getRules().getOffset(from));
-            DateTime gfrom = DateTime.parseRfc3339(formatter.format(fromInstant));
+            DateTime gfrom = DateTime.parseRfc3339(formatter.withZone(userZoneId).format(fromInstant));
             eventQuery.setTimeMin(gfrom);
         }
 
         if (null != to) {
-            Instant toInstant = from.toInstant(userZoneId.getRules().getOffset(to));
-            DateTime gTo = DateTime.parseRfc3339(formatter.format(toInstant));
+            Instant toInstant = to.toInstant(userZoneId.getRules().getOffset(to));
+            DateTime gTo = DateTime.parseRfc3339(formatter.withZone(userZoneId).format(toInstant));
             eventQuery.setTimeMax(gTo);
         }
 
         if (null != query) {
             eventQuery.setQ(query);
         }
+
+        System.out.println("recherche des évènnement respectant ces critères : " + humanReadableEventQuery(eventQuery));
 
         // List the next 10 events from the primary calendar.
         Events events = eventQuery.execute();
@@ -151,12 +154,27 @@ public class GoogleCalendarService {
         return items;
     }
 
+    private String humanReadableEventQuery(com.google.api.services.calendar.Calendar.Events.List eventQuery) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Calendrier").append(eventQuery.getCalendarId()).append(" entre ").append(eventQuery.getTimeMin())
+                .append(" et ").append(eventQuery.getTimeMax());
+
+        if (null != eventQuery.getQ()) {
+            sb.append(" contenant : '").append(eventQuery.getQ()).append("'");
+        } else {
+            sb.append(" Sans aucun autre filtre");
+        }
+
+        return sb.toString();
+    }
+
     private void displayEventInConsole(List<Event> events) {
 
         if (events.isEmpty()) {
-            System.out.println("No upcoming events found.");
+            System.out.println("Aucun évennement corespondant aux critères");
         } else {
-            System.out.println("Upcoming events");
+            System.out.println("Liste des évennements");
             for (Event event : events) {
                 DateTime start = event.getStart().getDateTime();
                 if (start == null) {
@@ -168,6 +186,16 @@ public class GoogleCalendarService {
 
     }
 
+    private void displayDurationInConsole(List<Event> events) {
+        long durationInMinutes = CalendarCalculator.sumDurationinMinutes(events);
+
+        long DurationInHourFullPart = durationInMinutes / 60;
+        long DurationInHourModulo = durationInMinutes % 60;
+
+        System.out.println("Durée total des évènnements : " + durationInMinutes + " minutes, soit : "
+                + DurationInHourFullPart + "h" + DurationInHourModulo + "min");
+    }
+
     public void displayEventInConsole(String user, String calendarId, LocalDateTime from, LocalDateTime to,
             ZoneId userZoneId, String query) throws IOException, GeneralSecurityException {
 
@@ -175,6 +203,33 @@ public class GoogleCalendarService {
 
         List<Event> items = getEvents(user, calendarId, from, to, userZoneId, query);
         displayEventInConsole(items);
+        displayDurationInConsole(items);
 
+    }
+
+    public class CalendarCalculator {
+
+        public static Long sumDurationinMinutes(List<Event> events) {
+            if (null == events) {
+                return 0l;
+            }
+
+            long nbMins = 0;
+
+            for (Event event : events) {
+                nbMins += extracDuration(event);
+            }
+            return nbMins;
+        }
+
+        private static Long extracDuration(Event event) {
+            Instant start = Instant.ofEpochMilli(event.getStart().getDateTime().getValue());
+            Instant end = Instant.ofEpochMilli(event.getEnd().getDateTime().getValue());
+
+            // Period period = Period.between(start, end);
+
+            return ChronoUnit.MINUTES.between(start, end);
+
+        }
     }
 }

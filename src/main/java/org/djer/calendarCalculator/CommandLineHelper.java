@@ -70,18 +70,36 @@ public class CommandLineHelper {
         if (line.hasOption("calendar")) {
             calendar = line.getOptionValue("calendar");
         }
+
+        if (line.hasOption("tz")) {
+            userTimeZone = ZoneOffset.of(line.getOptionValue("tz"));
+        }
+
         if (line.hasOption("from")) {
-            from = LocalDateTime.parse(line.getOptionValue("from"), DateTimeFormatter.BASIC_ISO_DATE);
+            from = LocalDateTime.parse(parseDateToValidDateTime(line.getOptionValue("from")),
+                    DateTimeFormatter.ISO_DATE_TIME);
         }
         if (line.hasOption("to")) {
-            to = LocalDateTime.parse(line.getOptionValue("to"), DateTimeFormatter.BASIC_ISO_DATE);
+            to = LocalDateTime.parse(parseDateToValidDateTime(line.getOptionValue("to")),
+                    DateTimeFormatter.ISO_DATE_TIME);
         }
         if (line.hasOption("query")) {
             query = line.getOptionValue("query");
         }
-        if (line.hasOption("tz")) {
-            userTimeZone = ZoneOffset.of(line.getOptionValue("tz"));
+    }
+
+    private String parseDateToValidDateTime(String cmdLineDate) {
+        String validFrom = cmdLineDate;
+        // [" +userTimeZone.getId() + "]"
+        String defaultHourPart = "T00:00:00";
+        if (cmdLineDate.length() == 8) {
+            validFrom = cmdLineDate.substring(0, 4) + "-" + cmdLineDate.substring(4, 6) + "-"
+                    + cmdLineDate.substring(6, 8) + defaultHourPart;
+        } else if (cmdLineDate.length() == 11) {
+            validFrom = cmdLineDate + defaultHourPart;
         }
+
+        return validFrom;
     }
 
     private void displayHelp() {
