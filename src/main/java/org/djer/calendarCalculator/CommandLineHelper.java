@@ -38,8 +38,10 @@ public class CommandLineHelper {
         options.addOption("h", "help", false, "Affiche ce message");
         options.addOption("u", "user", true, "Utilisateur LOCAL. Chaque utilisateur est lié à un compte Google");
         options.addOption("c", "calendar", true, "Calendrier à utiliser pour extraire les évennements");
-        options.addOption("f", "from", true, "Date de début de recherche des évennements");
-        options.addOption("t", "to", true, "Date de fin de recherche des évennements");
+        options.addOption("f", "from", true,
+                "Date de début de recherche des évennements. Jour au format 20220401 (commence au DEBUT), ou format ISO 2022-04-01T12:00:00.");
+        options.addOption("t", "to", true,
+                "Date de fin de recherche des évennements. Jour au format 20220401 (termeine à la FIN), ou format ISO 2022-04-01T12:00:00.");
         options.addOption("q", "query", true, "Filtre (query) sur les évènnements");
         options.addOption("tz", "timeZone", true, "Votre fuseau horraire local");
 
@@ -76,11 +78,11 @@ public class CommandLineHelper {
         }
 
         if (line.hasOption("from")) {
-            from = LocalDateTime.parse(parseDateToValidDateTime(line.getOptionValue("from")),
+            from = LocalDateTime.parse(parseDateToValideFromDateTime(line.getOptionValue("from")),
                     DateTimeFormatter.ISO_DATE_TIME);
         }
         if (line.hasOption("to")) {
-            to = LocalDateTime.parse(parseDateToValidDateTime(line.getOptionValue("to")),
+            to = LocalDateTime.parse(parseDateToValideEndDateTime(line.getOptionValue("to")),
                     DateTimeFormatter.ISO_DATE_TIME);
         }
         if (line.hasOption("query")) {
@@ -88,10 +90,18 @@ public class CommandLineHelper {
         }
     }
 
-    private String parseDateToValidDateTime(String cmdLineDate) {
+    private String parseDateToValideFromDateTime(String cmdLineDate) {
+        return parseDateToValidDateTime(cmdLineDate, "00:00:00");
+    }
+
+    private String parseDateToValideEndDateTime(String cmdLineDate) {
+        return parseDateToValidDateTime(cmdLineDate, "23:59:59");
+    }
+
+    private String parseDateToValidDateTime(String cmdLineDate, String hoursPart) {
         String validFrom = cmdLineDate;
         // [" +userTimeZone.getId() + "]"
-        String defaultHourPart = "T00:00:00";
+        String defaultHourPart = "T" + hoursPart;
         if (cmdLineDate.length() == 8) {
             validFrom = cmdLineDate.substring(0, 4) + "-" + cmdLineDate.substring(4, 6) + "-"
                     + cmdLineDate.substring(6, 8) + defaultHourPart;
