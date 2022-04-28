@@ -1,4 +1,4 @@
-package org.djer.calendarCalculator;
+package org.djer.calendarCalculator.model;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -41,9 +41,10 @@ public class CommandLineHelper {
         options.addOption("f", "from", true,
                 "Date de début de recherche des évennements. Jour au format 20220401 (commence au DEBUT), ou format ISO 2022-04-01T12:00:00.");
         options.addOption("t", "to", true,
-                "Date de fin de recherche des évennements. Jour au format 20220401 (termeine à la FIN), ou format ISO 2022-04-01T12:00:00.");
+                "Date de fin de recherche des évennements. Jour au format 20220431 (termeine à la FIN), ou format ISO 2022-04-01T12:00:00.");
         options.addOption("q", "query", true, "Filtre (query) sur les évènnements");
-        options.addOption("tz", "timeZone", true, "Votre fuseau horraire local");
+        options.addOption("tz", "timeZone", true,
+                "Votre fuseau horraire local. Par defaut celui de votre Systeme d'Exploitation.");
 
     }
 

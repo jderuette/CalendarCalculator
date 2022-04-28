@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.djer.calendarCalculator;
+package org.djer.calendarCalculator.model;
 
 import java.io.FileInputStream;
 import java.io.IOException;
