@@ -27,11 +27,13 @@ public class CommandLineHelper {
     private LocalDateTime to;
     private String query;
     private ZoneId userTimeZone;
-    private float hourPerDay;
+    private float workHourPerDay;
+    private float daillyRate;
 
     public CommandLineHelper(final String[] args) {
         userTimeZone = ZoneOffset.systemDefault();
-        hourPerDay = 7;
+        workHourPerDay = 7;
+        daillyRate = 300;
 
         defineCommandLineOptions();
         parseCommandLine(args);
@@ -49,7 +51,8 @@ public class CommandLineHelper {
         options.addOption("q", "query", true, "Filtre (query) sur les évènnements");
         options.addOption("tz", "timeZone", true,
                 "Votre fuseau horraire local. Par defaut celui de votre Systeme d'Exploitation.");
-        options.addOption("hpt", "timeZone", true, "Heures par jours (Hour Per Day) par defaut 7.");
+        options.addOption("whpt", "workHourPerDay", true, "Heures de travail par jours par defaut 7.");
+        options.addOption("dr", "daillyRate", true, "Taux Journalier : TJM par defaut 300.");
 
     }
 
@@ -93,6 +96,14 @@ public class CommandLineHelper {
         }
         if (line.hasOption("query")) {
             query = line.getOptionValue("query");
+        }
+
+        if (line.hasOption("workHourPerDay")) {
+            workHourPerDay = Float.parseFloat(line.getOptionValue("workHourPerDay"));
+        }
+
+        if (line.hasOption("daillyRate")) {
+            daillyRate = Float.parseFloat(line.getOptionValue("daillyRate"));
         }
     }
 
@@ -148,8 +159,11 @@ public class CommandLineHelper {
         return userTimeZone;
     }
 
-    public float getHourPerDay() {
-        return hourPerDay;
+    public float getWorkHourPerDay() {
+        return workHourPerDay;
     }
 
+    public float getDaillyRate() {
+        return daillyRate;
+    }
 }

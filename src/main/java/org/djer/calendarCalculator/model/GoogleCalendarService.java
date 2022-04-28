@@ -169,7 +169,7 @@ public class GoogleCalendarService {
         return sb.toString();
     }
 
-    private void displayEventInConsole(final List<Event> events, final float nbHourWorkDay) {
+    private void displayEventInConsole(final List<Event> events) {
 
         if (events.isEmpty()) {
             System.out.println("Aucun évennement corespondant aux critères");
@@ -186,26 +186,28 @@ public class GoogleCalendarService {
 
     }
 
-    private void displayDurationInConsole(final List<Event> events, final float nbHourWorkDay) {
+    private void displayDurationInConsole(final List<Event> events, final float nbHourWorkDay, final float daillyRate) {
         long durationInMinutes = CalendarCalculator.sumDurationinMinutes(events);
 
         long DurationInHourFullPart = durationInMinutes / 60;
         long DurationInHourModulo = durationInMinutes % 60;
         float durationInWorkDay = durationInMinutes / 60 / nbHourWorkDay;
+        float totalAmmount = durationInWorkDay * daillyRate;
 
         System.out.println("Durée total des évènnements : " + durationInMinutes + " minutes, soit : "
-                + DurationInHourFullPart + "h" + DurationInHourModulo + "min. Soit : " + durationInWorkDay + " jours");
+                + DurationInHourFullPart + "h" + DurationInHourModulo + "min. Soit : " + durationInWorkDay
+                + " jours. Soit un montant de : " + totalAmmount);
     }
 
     public void displayEventInConsole(final String user, final String calendarId, final LocalDateTime from,
-            final LocalDateTime to, final ZoneId userZoneId, final String query, final float nbHourWorkDay)
-            throws IOException, GeneralSecurityException {
+            final LocalDateTime to, final ZoneId userZoneId, final String query, final float nbHourWorkDay,
+            final float daillyRate) throws IOException, GeneralSecurityException {
 
         loadCalendarApi(user);
 
         List<Event> items = getEvents(user, calendarId, from, to, userZoneId, query);
-        displayEventInConsole(items, nbHourWorkDay);
-        displayDurationInConsole(items, nbHourWorkDay);
+        displayEventInConsole(items);
+        displayDurationInConsole(items, nbHourWorkDay, daillyRate);
 
     }
 
