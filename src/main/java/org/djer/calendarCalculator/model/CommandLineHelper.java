@@ -27,9 +27,12 @@ public class CommandLineHelper {
     private LocalDateTime to;
     private String query;
     private ZoneId userTimeZone;
+    private float hourPerDay;
 
     public CommandLineHelper(final String[] args) {
         userTimeZone = ZoneOffset.systemDefault();
+        hourPerDay = 7;
+
         defineCommandLineOptions();
         parseCommandLine(args);
     }
@@ -46,6 +49,7 @@ public class CommandLineHelper {
         options.addOption("q", "query", true, "Filtre (query) sur les évènnements");
         options.addOption("tz", "timeZone", true,
                 "Votre fuseau horraire local. Par defaut celui de votre Systeme d'Exploitation.");
+        options.addOption("hpt", "timeZone", true, "Heures par jours (Hour Per Day) par defaut 7.");
 
     }
 
@@ -142,6 +146,10 @@ public class CommandLineHelper {
 
     public ZoneId getUserTimeZone() {
         return userTimeZone;
+    }
+
+    public float getHourPerDay() {
+        return hourPerDay;
     }
 
 }

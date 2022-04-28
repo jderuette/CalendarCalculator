@@ -38,8 +38,6 @@ public class CalendarCalcultorLauncher implements CommandLineRunner {
         GoogleCalendarService service = new GoogleCalendarService();
         service.displayEventInConsole(commandLineHelper.getUser(), commandLineHelper.getCalendar(),
                 commandLineHelper.getFrom(), commandLineHelper.getTo(), commandLineHelper.getUserTimeZone(),
-                commandLineHelper.getQuery());
-
+                commandLineHelper.getQuery(), commandLineHelper.getHourPerDay());
     }
-
 }

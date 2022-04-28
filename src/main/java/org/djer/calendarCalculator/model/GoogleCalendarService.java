@@ -169,7 +169,7 @@ public class GoogleCalendarService {
         return sb.toString();
     }
 
-    private void displayEventInConsole(final List<Event> events) {
+    private void displayEventInConsole(final List<Event> events, final float nbHourWorkDay) {
 
         if (events.isEmpty()) {
             System.out.println("Aucun évennement corespondant aux critères");
@@ -186,25 +186,26 @@ public class GoogleCalendarService {
 
     }
 
-    private void displayDurationInConsole(final List<Event> events) {
+    private void displayDurationInConsole(final List<Event> events, final float nbHourWorkDay) {
         long durationInMinutes = CalendarCalculator.sumDurationinMinutes(events);
 
         long DurationInHourFullPart = durationInMinutes / 60;
         long DurationInHourModulo = durationInMinutes % 60;
+        float durationInWorkDay = durationInMinutes / 60 / nbHourWorkDay;
 
         System.out.println("Durée total des évènnements : " + durationInMinutes + " minutes, soit : "
-                + DurationInHourFullPart + "h" + DurationInHourModulo + "min");
+                + DurationInHourFullPart + "h" + DurationInHourModulo + "min. Soit : " + durationInWorkDay + " jours");
     }
 
     public void displayEventInConsole(final String user, final String calendarId, final LocalDateTime from,
-            final LocalDateTime to, final ZoneId userZoneId, final String query)
+            final LocalDateTime to, final ZoneId userZoneId, final String query, final float nbHourWorkDay)
             throws IOException, GeneralSecurityException {
 
         loadCalendarApi(user);
 
         List<Event> items = getEvents(user, calendarId, from, to, userZoneId, query);
-        displayEventInConsole(items);
-        displayDurationInConsole(items);
+        displayEventInConsole(items, nbHourWorkDay);
+        displayDurationInConsole(items, nbHourWorkDay);
 
     }
 
