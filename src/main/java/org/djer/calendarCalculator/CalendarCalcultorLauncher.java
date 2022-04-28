@@ -31,8 +31,15 @@ public class CalendarCalcultorLauncher implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException, GeneralSecurityException {
         LOG.info("EXECUTING : command line runner");
+
+        CommandLineHelper commandLineHelper = new CommandLineHelper();
+
+        commandLineHelper.parseCommandLine(args);
+
         GoogleCalendarService service = new GoogleCalendarService();
-        service.displayEventInConsole("user");
+        service.displayEventInConsole(commandLineHelper.getUser(), commandLineHelper.getCalendar(),
+                commandLineHelper.getFrom(), commandLineHelper.getTo(), commandLineHelper.getUserTimeZone(),
+                commandLineHelper.getQuery());
 
     }
 

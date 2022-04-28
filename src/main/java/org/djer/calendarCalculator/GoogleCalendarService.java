@@ -10,6 +10,10 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +62,9 @@ public class GoogleCalendarService {
     private static final List<String> SCOPES = Collections.singletonList(CalendarScopes.CALENDAR_READONLY);
 
     private static final String CREDENTIALS_FILE_PATH = APP_DATA_FOLDER.resolve("credentials.json").toString();
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    // .withZone(ZoneId.of("UTC"));
 
     /**
      * Creates an authorized Credential object.
@@ -111,16 +118,34 @@ public class GoogleCalendarService {
         }
     }
 
-    private List<Event> getEvents(String user, String calendar) throws GeneralSecurityException, IOException {
+    private List<Event> getEvents(String user, String calendar, LocalDateTime from, LocalDateTime to, ZoneId userZoneId,
+            String query) throws GeneralSecurityException, IOException {
         Calendar service = loadedCalendarService.get(user);
         if (null == service) {
             loadCalendarApi(user);
         }
 
+        com.google.api.services.calendar.Calendar.Events.List eventQuery = service.events().list(calendar)
+                .setMaxResults(100).setOrderBy("startTime").setSingleEvents(true);
+
+        if (null != from) {
+            Instant fromInstant = from.toInstant(userZoneId.getRules().getOffset(from));
+            DateTime gfrom = DateTime.parseRfc3339(formatter.format(fromInstant));
+            eventQuery.setTimeMin(gfrom);
+        }
+
+        if (null != to) {
+            Instant toInstant = from.toInstant(userZoneId.getRules().getOffset(to));
+            DateTime gTo = DateTime.parseRfc3339(formatter.format(toInstant));
+            eventQuery.setTimeMax(gTo);
+        }
+
+        if (null != query) {
+            eventQuery.setQ(query);
+        }
+
         // List the next 10 events from the primary calendar.
-        DateTime now = new DateTime(System.currentTimeMillis());
-        Events events = service.events().list("primary").setMaxResults(10).setTimeMin(now).setOrderBy("startTime")
-                .setSingleEvents(true).execute();
+        Events events = eventQuery.execute();
         List<Event> items = events.getItems();
 
         return items;
@@ -143,9 +168,12 @@ public class GoogleCalendarService {
 
     }
 
-    public void displayEventInConsole(String user) throws IOException, GeneralSecurityException {
+    public void displayEventInConsole(String user, String calendarId, LocalDateTime from, LocalDateTime to,
+            ZoneId userZoneId, String query) throws IOException, GeneralSecurityException {
+
         loadCalendarApi(user);
-        List<Event> items = getEvents(user, "primary");
+
+        List<Event> items = getEvents(user, calendarId, from, to, userZoneId, query);
         displayEventInConsole(items);
 
     }
