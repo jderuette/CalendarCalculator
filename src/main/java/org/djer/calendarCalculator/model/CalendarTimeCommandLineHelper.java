@@ -51,7 +51,7 @@ public class CalendarTimeCommandLineHelper {
 
     private void defineCommandLineOptions() {
         options = new Options();
-        options.addOption("h", "help", false, "Affiche ce message");
+        options.addOption("h", "help", false, "Affiche l'aide de l'outil de calcul de temps.");
         options.addOption("u", "user", true, "Utilisateur LOCAL. Chaque utilisateur est lié à un compte Google");
         options.addOption("c", "calendar", true, "Calendrier à utiliser pour extraire les évennements");
         options.addOption("f", "from", true,
