@@ -21,13 +21,23 @@ public class CommandLineHelper {
     private Options options = null;
     private CommandLine line = null;
 
+    /**
+     * idenitifiant d'un utilisateur (local) permettant de stocker et ré-utiliser les token d'authentifications.
+     */
     private String user;
+    /** identifiant du calendrier dans lequel effectuer la requete. */
     private String calendar;
+    /** rechercher à partir de cette date. */
     private LocalDateTime from;
+    /** rechercher jusqu'a cette date. */
     private LocalDateTime to;
+    /** filtre surles dates (query). */
     private String query;
+    /** Fuseau horraire de l'utilisateur utilisant l'appli. */
     private ZoneId userTimeZone;
+    /** Nombre d'heurs de travail par jours (pour calcul du TJM). **/
     private float workHourPerDay;
+    /** TJM **/
     private float daillyRate;
 
     public CommandLineHelper(final String[] args) {
@@ -47,7 +57,7 @@ public class CommandLineHelper {
         options.addOption("f", "from", true,
                 "Date de début de recherche des évennements. Jour au format 20220401 (commence au DEBUT), ou format ISO 2022-04-01T12:00:00.");
         options.addOption("t", "to", true,
-                "Date de fin de recherche des évennements. Jour au format 20220431 (termeine à la FIN), ou format ISO 2022-04-01T12:00:00.");
+                "Date de fin de recherche des évennements. Jour au format 20220431 (termine à la FIN), ou format ISO 2022-04-01T12:00:00.");
         options.addOption("q", "query", true, "Filtre (query) sur les évènnements");
         options.addOption("tz", "timeZone", true,
                 "Votre fuseau horraire local. Par defaut celui de votre Systeme d'Exploitation.");
