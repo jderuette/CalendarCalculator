@@ -3,7 +3,7 @@ package org.djer.calendarCalculator;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
-import org.djer.calendarCalculator.model.CommandLineHelper;
+import org.djer.calendarCalculator.model.CalendarTimeCommandLineHelper;
 import org.djer.calendarCalculator.model.GoogleCalendarService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class CalendarCalcultorLauncher implements CommandLineRunner {
     public void run(String... args) throws IOException, GeneralSecurityException {
         LOG.info("EXECUTING : command line runner");
 
-        CommandLineHelper commandLineHelper = new CommandLineHelper(args);
+        CalendarTimeCommandLineHelper commandLineHelper = new CalendarTimeCommandLineHelper(args);
 
         GoogleCalendarService service = new GoogleCalendarService();
         service.displayEventInConsole(commandLineHelper.getUser(), commandLineHelper.getCalendar(),
