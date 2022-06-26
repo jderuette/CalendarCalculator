@@ -64,6 +64,9 @@ public class CalendarTimeCommandLineHelper {
         options.addOption("whpt", "workHourPerDay", true, "Heures de travail par jours par defaut 7.");
         options.addOption("dr", "daillyRate", true, "Taux Journalier : TJM par defaut 300.");
 
+        options.addOption("a", "action", false,
+                "Actiion à effectuer 'liste' pour la liste des calendrier. Toutes autre valeur permet d'extraire des données du calendrier.");
+
     }
 
     private void parseCommandLine(final String[] args) {

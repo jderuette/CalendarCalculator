@@ -32,6 +32,8 @@ import com.google.api.client.util.DateTime;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.calendar.Calendar;
 import com.google.api.services.calendar.CalendarScopes;
+import com.google.api.services.calendar.model.CalendarList;
+import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
 
@@ -116,6 +118,18 @@ public class GoogleCalendarService {
 
             loadedCalendarService.put(user, service);
         }
+    }
+
+    private CalendarList getCalendarList(final String user) throws GeneralSecurityException, IOException {
+
+        Calendar service = loadedCalendarService.get(user);
+        if (null == service) {
+            loadCalendarApi(user);
+        }
+
+        CalendarList calendarList = service.calendarList().list().execute();
+
+        return calendarList;
     }
 
     private List<Event> getEvents(final String user, final String calendar, final LocalDateTime from,
@@ -208,6 +222,30 @@ public class GoogleCalendarService {
         List<Event> items = getEvents(user, calendarId, from, to, userZoneId, query);
         displayEventInConsole(items);
         displayDurationInConsole(items, nbHourWorkDay, daillyRate);
+
+    }
+
+    public void listeAclendars(String user) throws GeneralSecurityException, IOException {
+        loadCalendarApi(user);
+
+        CalendarList calendarsData = getCalendarList(user);
+        displayCalendarInConsole(calendarsData);
+    }
+
+    private void displayCalendarInConsole(CalendarList calendarsData) {
+        StringBuilder sb = new StringBuilder();
+        System.out.println("Liste de vos calendrier : ");
+        for (CalendarListEntry calendar : calendarsData.getItems()) {
+            sb.append(calendar.getId());
+            sb.append(" : ");
+            sb.append(calendar.getSummary());
+            if (null != calendar.getSummaryOverride()) {
+                sb.append(" ==> ");
+                sb.append(calendar.getSummaryOverride());
+            }
+            sb.append(System.lineSeparator());
+        }
+        System.out.println(sb.toString());
 
     }
 

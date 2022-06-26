@@ -3,6 +3,7 @@ package org.djer.calendarCalculator;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+import org.djer.calendarCalculator.model.CalendarListCommandLineHelper;
 import org.djer.calendarCalculator.model.CalendarTimeCommandLineHelper;
 import org.djer.calendarCalculator.model.GoogleCalendarService;
 import org.slf4j.Logger;
@@ -32,12 +33,34 @@ public class CalendarCalcultorLauncher implements CommandLineRunner {
     @Override
     public void run(String... args) throws IOException, GeneralSecurityException {
         LOG.info("EXECUTING : command line runner");
-
-        CalendarTimeCommandLineHelper commandLineHelper = new CalendarTimeCommandLineHelper(args);
+        Boolean actionParamFound = false;
+        Boolean listAction = false;
+        for (String s : args) {
+            if (!actionParamFound) {
+                if (s.contains("-a")) {
+                    actionParamFound = true;
+                }
+            } else {
+                if (s.contains("list")) {
+                    listAction = true;
+                    actionParamFound = false;
+                }
+            }
+        }
 
         GoogleCalendarService service = new GoogleCalendarService();
-        service.displayEventInConsole(commandLineHelper.getUser(), commandLineHelper.getCalendar(),
-                commandLineHelper.getFrom(), commandLineHelper.getTo(), commandLineHelper.getUserTimeZone(),
-                commandLineHelper.getQuery(), commandLineHelper.getWorkHourPerDay(), commandLineHelper.getDaillyRate());
+
+        if (listAction) {
+            CalendarListCommandLineHelper commandLineHelper = new CalendarListCommandLineHelper(args);
+            service.listeAclendars(commandLineHelper.getUser());
+
+        } else {
+            CalendarTimeCommandLineHelper commandLineHelper = new CalendarTimeCommandLineHelper(args);
+
+            service.displayEventInConsole(commandLineHelper.getUser(), commandLineHelper.getCalendar(),
+                    commandLineHelper.getFrom(), commandLineHelper.getTo(), commandLineHelper.getUserTimeZone(),
+                    commandLineHelper.getQuery(), commandLineHelper.getWorkHourPerDay(),
+                    commandLineHelper.getDaillyRate());
+        }
     }
 }
