@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.djer.calendarCalculator.model.google.CompletedEvent;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
@@ -183,20 +185,73 @@ public class GoogleCalendarService {
         return sb.toString();
     }
 
-    private void displayEventInConsole(final List<Event> events) {
+    private void displayEventInConsole(final List<Event> events, Boolean displayEventDuration,
+            Boolean displayDaySummary) {
+
+        StringBuilder sb = null;
+
+        int currentDay = -1;
+        int nbEventThisDay = 0;
+        int cumulativeDurationPerDay = 0;
 
         if (events.isEmpty()) {
             System.out.println("Aucun évennement corespondant aux critères");
         } else {
             System.out.println("Liste des évennements");
             for (Event event : events) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    start = event.getStart().getDate();
+                sb = new StringBuilder(100);
+                CompletedEvent completedEvent = new CompletedEvent(event);
+
+                if (displayDaySummary) {
+                    int eventDay = completedEvent.getStart().getDayOfMonth();
+                    if (currentDay == -1) {
+                        currentDay = eventDay;
+                    }
+                    if (currentDay == eventDay) {
+                        nbEventThisDay++;
+                        cumulativeDurationPerDay += completedEvent.getDurationinMinutes();
+                    } else {
+                        sb.append(System.lineSeparator());
+                        sb.append("======================= ");
+                        sb.append(" Jour : ");
+                        sb.append(currentDay);
+                        sb.append(" => ");
+                        sb.append(nbEventThisDay);
+                        sb.append(" evennements");
+                        sb.append(" ---- ");
+                        sb.append(cumulativeDurationPerDay);
+                        sb.append("mins");
+                        sb.append(System.lineSeparator());
+
+                        // reset
+                        currentDay = eventDay;
+                        nbEventThisDay = 0;
+                        cumulativeDurationPerDay = 0;
+                    }
                 }
-                System.out.printf("%s (%s)\n", event.getSummary(), start);
+
+                sb.append(System.lineSeparator());
+                // end of summary
+
+                sb.append(completedEvent.getSummary());
+                sb.append(" le ");
+                sb.append(completedEvent.getStart());
+
+                if (displayEventDuration) {
+                    sb.append("      DUREE : ");
+                    sb.append(completedEvent.getDurationinMinutes());
+                    sb.append("mins");
+                }
+
+                // end of event details
+
+                System.out.printf(sb.toString());
             }
         }
+    }
+
+    private void displayEventInConsole(final List<Event> events) {
+        displayEventInConsole(events, Boolean.TRUE, Boolean.TRUE);
 
     }
 
