@@ -16,6 +16,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -193,14 +194,18 @@ public class GoogleCalendarService {
         int currentDay = -1;
         int nbEventThisDay = 0;
         int cumulativeDurationPerDay = 0;
+        boolean isLastEvent = false;
 
         if (events.isEmpty()) {
             System.out.println("Aucun évennement corespondant aux critères");
         } else {
             System.out.println("Liste des évennements");
-            for (Event event : events) {
+            Iterator<Event> itEvents = events.iterator();
+            while (itEvents.hasNext()) {
+                Event event = itEvents.next();
                 sb = new StringBuilder(100);
                 CompletedEvent completedEvent = new CompletedEvent(event);
+                isLastEvent = !itEvents.hasNext();
 
                 if (displayDaySummary) {
                     int eventDay = completedEvent.getStart().getDayOfMonth();
@@ -211,23 +216,15 @@ public class GoogleCalendarService {
                         nbEventThisDay++;
                         cumulativeDurationPerDay += completedEvent.getDurationinMinutes();
                     } else {
-                        sb.append(System.lineSeparator());
-                        sb.append("======================= ");
-                        sb.append(" Jour : ");
-                        sb.append(currentDay);
-                        sb.append(" => ");
-                        sb.append(nbEventThisDay);
-                        sb.append(" evennements");
-                        sb.append(" ---- ");
-                        sb.append(cumulativeDurationPerDay);
-                        sb.append("mins");
-                        sb.append(System.lineSeparator());
+
+                        CalendarCalculator.addStringSumary(sb, currentDay, nbEventThisDay, cumulativeDurationPerDay);
 
                         // reset
                         currentDay = eventDay;
                         nbEventThisDay = 0;
                         cumulativeDurationPerDay = 0;
                     }
+
                 }
 
                 sb.append(System.lineSeparator());
@@ -245,7 +242,19 @@ public class GoogleCalendarService {
 
                 // end of event details
 
-                System.out.printf(sb.toString());
+                // specific summary for last Day
+                if (displayDaySummary && isLastEvent) {
+                    if (nbEventThisDay == 0) {
+                        nbEventThisDay++;
+                        cumulativeDurationPerDay += completedEvent.getDurationinMinutes();
+                    }
+
+                    sb.append(System.lineSeparator());
+                    CalendarCalculator.addStringSumary(sb, currentDay, nbEventThisDay, cumulativeDurationPerDay);
+                }
+                // END specific summary last day
+
+                System.out.println(sb.toString());
             }
         }
     }

@@ -37,4 +37,20 @@ public class CalendarCalculator {
         return tempUnit.between(start, end);
     }
 
+    public static void addStringSumary(StringBuilder sb, int currentDay, int nbEventThisDay,
+            int cumulativeDurationPerDay) {
+
+        sb.append("======================= ");
+        sb.append(" Jour : ");
+        sb.append(currentDay);
+        sb.append(" => ");
+        sb.append(nbEventThisDay);
+        sb.append(" evennements");
+        sb.append(" ---- ");
+        sb.append(cumulativeDurationPerDay);
+        sb.append("mins");
+        sb.append(System.lineSeparator());
+
+    }
+
 }
