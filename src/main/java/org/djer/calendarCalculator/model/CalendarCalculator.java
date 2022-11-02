@@ -38,7 +38,7 @@ public class CalendarCalculator {
     }
 
     public static void addStringSumary(StringBuilder sb, int currentDay, int nbEventThisDay,
-            int cumulativeDurationPerDay) {
+            long cumulativeDurationPerDay) {
 
         sb.append("======================= ");
         sb.append(" Jour : ");
